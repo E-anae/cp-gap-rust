@@ -8,8 +8,8 @@ use stm32f4xx_hal::{
     i2c::{ I2c, Instance, Mode },
     pac::{ self, sai::ch::im, GPIOG },
     prelude::*,
+    serial::{ Serial, config::Config },
 };
-use stm32f4xx_hal::serial::{ Serial, config::Config };
 use core::panic::PanicInfo;
 use rtt_target::{ rtt_init_print, rprintln };
 use core::fmt::Write;
@@ -58,7 +58,7 @@ fn main() -> ! {
     let serial = Serial::uart7(
         device.UART7,
         (gpiof.pf7.into_alternate(), gpiof.pf6.into_alternate()),
-        Config::default().baudrate((115_200).bps()),
+        Config::default().baudrate((9600).bps()).wordlength_9().parity_even(),
         clocks
     ).unwrap();
     let (mut tx, _rx) = serial.split();
@@ -68,6 +68,13 @@ fn main() -> ! {
             Ok(data) => {
                 rprintln!(
                     "Gyro: x: {}, y: {}, z: {}",
+                    data.gyro_data.x,
+                    data.gyro_data.y,
+                    data.gyro_data.z
+                );
+                let _ = write!(
+                    tx,
+                    "X{:08}, Y{:08}, Z{:08}\r\n",
                     data.gyro_data.x,
                     data.gyro_data.y,
                     data.gyro_data.z

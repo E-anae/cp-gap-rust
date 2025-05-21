@@ -96,8 +96,8 @@ impl<I2C: Write + WriteRead, D: embedded_hal::blocking::delay::DelayMs<u32>> Mpu
         let mut buffer = [0; 6];
 
         // Read FIFO_COUNT_H and FIFO_COUNT_L
-        let fifo_h = self.read_address(FIFO_COUNT_H)?.into();
-        let fifo_l = self.read_address(FIFO_COUNT_L)?.into();
+        let fifo_h = self.read_address(FIFO_COUNT_H)?;
+        let fifo_l = self.read_address(FIFO_COUNT_L)?;
         let count = u16::from_be_bytes([fifo_h, fifo_l]);
 
         if count < 6 {
