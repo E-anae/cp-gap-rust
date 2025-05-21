@@ -6,7 +6,7 @@ Bonus step for GAP project
 
 ### Linux / WSL
 
-install cargo and rustup:
+install cargo and rustup
 
 `curl https://sh.rustup.rs -sSf | sh`
 
@@ -30,3 +30,17 @@ If you’re still unable to access the debug probes after following these steps,
 [boot]
 command="service udev start"
 ```
+
+### Windows
+
+> [!WARNING]
+> cargo embed was not though for Windows and the installation of certain drivers may disable your usual drivers. It is recommended that you install WSL and get familiar with it [WSL installation](https://learn.microsoft.com/en-us/windows/wsl/install).
+
+install cargo and rustup
+
+[Download rustup-init.exe (32-bit)](https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe)
+[Download rustup-init.exe (64-bit)](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
+
+install probe-rs
+
+`irm https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.ps1 | iex`
