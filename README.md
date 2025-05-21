@@ -10,6 +10,10 @@ install cargo and rustup
 
 `curl https://sh.rustup.rs -sSf | sh`
 
+install target for project
+
+`rustup target add thumbv7em-none-eabihf`
+
 install probe-rs
 
 `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh`
@@ -34,14 +38,15 @@ command="service udev start"
 
 ### Windows
 
-> [!WARNING]
-> cargo embed was not though for Windows and the installation of certain drivers may disable your usual drivers. It is recommended that you install WSL and get familiar with it [WSL installation](https://learn.microsoft.com/en-us/windows/wsl/install).
-
 install cargo and rustup
 
 [Download rustup-init.exe (32-bit)](https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe)
 
 [Download rustup-init.exe (64-bit)](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
+
+install target for project
+
+`rustup target add thumbv7em-none-eabihf`
 
 install probe-rs
 
