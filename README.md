@@ -25,7 +25,8 @@ Run `sudo udevadm trigger` to ensure the new rules are applied to already added 
 
 If you’re still unable to access the debug probes after following these steps, try adding your user to the plugdev group.
 
-> [!NOTE] > _"If you are using WSL, you may need to enable the udev service. To check if the service is running, run service udev status. If the service is not started, edit /etc/wsl.conf (with sudo) and make sure the following is included:"_
+> [!NOTE]
+> _"If you are using WSL, you may need to enable the udev service. To check if the service is running, run service udev status. If the service is not started, edit /etc/wsl.conf (with sudo) and make sure the following is included:"_
 
 ```
 [boot]
