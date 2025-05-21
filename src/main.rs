@@ -18,6 +18,8 @@ use mpu60x0::{ Mpu60x0, error::Mpu60x0Error };
 
 mod mpu60x0;
 
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
 #[entry]
 fn main() -> ! {
     rtt_init_print!();
@@ -53,6 +55,10 @@ fn main() -> ! {
     match mpu.init() {
         Ok(_) => rprintln!("MPU60X0 initialized"),
         Err(e) => rprintln!("MPU60X0 initialization failed: {:?}", e),
+    }
+
+    unsafe {
+	let test = gapcom_create();
     }
 
     let serial = Serial::uart7(

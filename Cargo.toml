@@ -16,3 +16,6 @@ edition = "2024"
 
 [profile.release]
     panic = "abort"
+
+[build-dependencies]
+bindgen = "0.65"
