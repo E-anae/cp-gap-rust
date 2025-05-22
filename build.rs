@@ -4,6 +4,7 @@ fn main() {
     // Set up library paths and linking
     println!("cargo:rustc-link-search=native={}", current_dir.join("lib").display());
     println!("cargo:rustc-link-lib=static=gapcom");
+    println!("cargo:rustc-link-lib=c");
 
     let target = std::env::var("TARGET").unwrap_or_else(|_| "".to_string());
     let is_arm = target.contains("thumb") || target.contains("arm");
@@ -45,6 +46,7 @@ fn main() {
     let bindings = builder
         .header("Inc/gapcom/gapcom/gapcom.h")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        .use_core()
         .generate()
         .expect("Failed to generate bindings");
 

@@ -1,6 +1,7 @@
 #![no_main]
 #![no_std]
 
+use bindings::gapcom_create;
 use cortex_m_rt::entry;
 use panic_halt as _;
 use stm32f4xx_hal::{
@@ -39,6 +40,10 @@ fn main() -> ! {
     let mut delay = Delay::new(core.SYST, &clocks);
 
     rprintln!("Hello, world!");
+
+    unsafe {
+        let gapcom = gapcom_create();
+    }
 
     let i2c = I2c::new(
         device.I2C1,

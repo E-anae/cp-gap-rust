@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+    libc = "0.2" 
     embedded-hal = "0.2.0"
     cortex-m = "0.7"
     cortex-m-rt = "0.6"
