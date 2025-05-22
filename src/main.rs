@@ -18,11 +18,11 @@ use core::fmt::Write;
 use mpu60x0::{ Mpu60x0, error::Mpu60x0Error };
 
 mod mpu60x0;
-
 mod bindings;
 
 #[entry]
 fn main() -> ! {
+    // Initialize RTT first thing
     rtt_init_print!();
 
     let device = pac::Peripherals::take().unwrap();

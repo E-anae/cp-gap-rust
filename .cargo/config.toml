@@ -4,6 +4,8 @@ runner = "probe-run --chip STM32F429ZI"
 [target.thumbv7em-none-eabihf]
 rustflags = [
     "-C", "link-arg=-Tlink.x",
+    # "-C", "link-arg=-specs=nano.specs", # Active newlib-nano
+    # "-C", "link-arg=-lc",               # Lie la libc optimisée
 ]
 
 [build]
