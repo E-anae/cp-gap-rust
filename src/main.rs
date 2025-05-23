@@ -1,6 +1,8 @@
 #![no_main]
 #![no_std]
 
+extern crate alloc;
+
 use bindings::gapcom_create;
 use cortex_m_rt::entry;
 use panic_halt as _;
@@ -14,15 +16,28 @@ use stm32f4xx_hal::{
 use core::panic::PanicInfo;
 use rtt_target::{ rtt_init_print, rprintln };
 use core::fmt::Write;
+use tinyrlibc as _;
+use embedded_alloc::LlffHeap as Heap;
 
 use mpu60x0::{ Mpu60x0, error::Mpu60x0Error };
 
 mod mpu60x0;
 mod bindings;
 
+#[global_allocator]
+static HEAP: Heap = Heap::empty();
+
 #[entry]
 fn main() -> ! {
-    // Initialize RTT first thing
+    {
+        use core::mem::MaybeUninit;
+        const HEAP_SIZE: usize = 1024;
+        static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
+        unsafe {
+            HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE);
+        }
+    }
+
     rtt_init_print!();
 
     let device = pac::Peripherals::take().unwrap();
