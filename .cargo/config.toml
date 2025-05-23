@@ -6,8 +6,12 @@ rustflags = [
     "-C", "link-arg=-nostartfiles",
     "-C", "link-arg=-Tlink.x",
     "-C", "link-arg=-specs=nano.specs",
+    "-C", "link-arg=-mcpu=cortex-m4",
+    "-C", "link-arg=-mthumb",
+    "-C", "link-arg=-mfloat-abi=hard",
+    "-C", "link-arg=-mfpu=fpv4-sp-d16",
     "-C", "link-arg=-lc",
-    "-C", "link-arg=-lm",
+    "-C", "link-arg=-lnosys",
 ]
 
 [build]
