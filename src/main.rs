@@ -18,7 +18,6 @@ use rtt_target::{ rtt_init_print, rprintln };
 use core::fmt::Write;
 use tinyrlibc as _;
 use embedded_alloc::LlffHeap as Heap;
-
 use mpu60x0::{ Mpu60x0, error::Mpu60x0Error };
 
 mod mpu60x0;

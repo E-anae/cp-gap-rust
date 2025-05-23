@@ -3,7 +3,7 @@ runner = "probe-rs run --chip STM32F429ZI"
 rustflags = [
     "-C", "linker=arm-none-eabi-gcc",
     "-C", "link-arg=-Wl,--gc-sections",
-    "-C", "link-arg=-Tlink.x",
+    "-C", "link-arg=-Tmemory.x",
     "-C", "link-arg=-mcpu=cortex-m4",
     "-C", "link-arg=-mthumb",
     "-C", "link-arg=-mfloat-abi=hard",
