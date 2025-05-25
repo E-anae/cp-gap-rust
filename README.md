@@ -2,9 +2,17 @@
 
 Bonus step for GAP project
 
-## Installation and setup
+## Requirements
 
-### Linux / WSL / macOs
+- Either Windows or Linux distribution installed on your computer (probably doable on MacOs too).
+- [STM32F429ZI](https://www.st.com/en/microcontrollers-microprocessors/stm32f429zi.html) with its micro-usb cable
+- [MPU60X0](https://www.gotronic.fr/art-module-6-dof-sen-mpu6050-31492.htm)
+- [USB to Serial UART TTL Converter](https://www.robotistan.com/usb-to-serial-uart-ttl-converter-ch340g-usb-to-com-adapter-cable#)
+- x4 pin wires
+
+## Installation
+
+### Linux / WSL
 
 install cargo and rustup
 
@@ -29,7 +37,8 @@ Run `sudo udevadm trigger` to ensure the new rules are applied to already added 
 
 If you’re still unable to access the debug probes after following these steps, try adding your user to the plugdev group.
 
-> [!NOTE] > _"If you are using WSL, you may need to enable the udev service. To check if the service is running, run service udev status. If the service is not started, edit /etc/wsl.conf (with sudo) and make sure the following is included:"_
+> [!NOTE]
+> "If you are using WSL, you may need to enable the udev service. To check if the service is running, run service udev status. If the service is not started, edit /etc/wsl.conf (with sudo) and make sure the following is included:"
 
 ```
     [boot]
@@ -52,6 +61,21 @@ install probe-rs
 
 `irm https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.ps1 | iex`
 
+## Hardware setup
+
+Connect the [STM32F429ZI](https://www.st.com/en/microcontrollers-microprocessors/stm32f429zi.html) to your computer using the micro-usb cable.
+It should now appear on the list of device connected to your computer.
+
+> [!NOTE]
+> If you are using WSL take a look at [this](https://learn.microsoft.com/windows/wsl/connect-usb). You are going to need to forward your COM ports to your WSL.
+> Once installed, restart your computer, open a Windows' powershell terminal in administrator mode.
+> Find the right busid using `usbipd list`, it should look like `<busid> ... ST-Link Debug, Dispositif de stockage de masse USB, STMic...`
+> You will now have to bind and attach your device to your WSL, using first, `usbipd bind --busid <busid>`, and then `usbipd attach --wsl --busid <busid>` with your own busid. Note that you will have to reatach each time you unplug the device.
+
+Now connect the [USB to Serial UART TTL Converter](https://www.robotistan.com/usb-to-serial-uart-ttl-converter-ch340g-usb-to-com-adapter-cable#) to your computer and then connect the dark wire to a GND pin on the STM32F429ZI, the green wire to the PF6 pin on the STM32F429ZI and the white wire to the PF7 pin on the STM32F429ZI.
+
+Now using the 4 pin wires connect the VCC pin of the [MPU60X0](https://www.gotronic.fr/art-module-6-dof-sen-mpu6050-31492.htm) to a 3V pin on the STM32F429ZI, the GND pin to a GND pin on the STM32F429ZI, the SCL pin to the PB6 pin on the STM32F429ZI and the SDA to the PB7 pin on the STM32F429ZI.
+
 ## How to use ?
 
 > [!NOTE]
@@ -61,14 +85,6 @@ To build the project simply run `cargo build --release`.
 You can then find the binary at `target/thumbv7em-none-eabihf/release/cp-gap-rust`.
 
 If you want to flash the code, onto the chip connect the chipt to your computer with the given micro-usb cable.
-
-It should now appear on the list of device connected to your computer.
-
-> [!NOTE]
-> If you are using WSL take a look at [this](https://learn.microsoft.com/windows/wsl/connect-usb). You are going to need to forward your COM ports to your WSL.
-> Once installed, restart your computer, open a Windows' powershell terminal in administrator mode.
-> Find the right busid using `usbipd list`, it should look like "<busid> ... ST-Link Debug, Dispositif de stockage de masse USB, STMic..."
-> You will now have to bind and attach your device to your WSL, using first, `usbipd bind --busid <busid>`, and then `usbipd attach --wsl --busid <busid>`
 
 you can run `cargo flash --release --chip STM32F429ZI`.
 
@@ -109,6 +125,8 @@ The idea is that we just need to declare equivalent functions in Rust with equiv
 
 The chosen method to read and send message from capcom is UART (UART7 in this case). The rx interupt implementation can be found at `src/interrupts.rs`, where we call capcom accept to process the sent command. And the sender impl can be found in `src/gapcom_sender.rs`, it uses UART7's tx to send the response.
 
+Once a command has been fully accepted, the associated callback will be called, the can be found in `gapcom_callbacks.rs`. Supported commands are: ping, set-log-verbosity, set-gyroscope.
+
 ### Step 2 (Logger)
 
 Logger implementation can be found at `src/logger.rs`, it uses USART1's tx to log messages. After instanciation, a logger instance can be retrieved using the logger_instance function which will retrieve the logger and return a static ref to the value contained inside the mutex which will allow us to access the logger from anywhere in the project.
@@ -117,4 +135,6 @@ The logger and logs have 4 levels, debug, info, warning, error. And logs will on
 
 Messages will be logged using this pattern: "[LEVEL] MESSAGE"
 
-### Step
+### Step 3 (Gyroscope)
+
+The module for the support of the gyroscope can be found at `src/mpu60x0`
