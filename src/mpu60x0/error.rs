@@ -5,8 +5,8 @@ pub enum ErrorKind {
     CustomError,
     I2cError,
     DeviceNotFound,
-    InvalidData(u8),
-    NotEnoughData(u16),
+    NotEnoughData,
+    DeviceNotInitialized,
 }
 
 #[derive(Debug)]
@@ -37,17 +37,17 @@ impl Mpu60x0Error {
         }
     }
 
-    pub fn invalid_data(data: u8) -> Self {
+    pub fn not_enough_data() -> Self {
         Mpu60x0Error {
-            kind: ErrorKind::InvalidData(data),
-            message: "Invalid data",
+            kind: ErrorKind::NotEnoughData,
+            message: "Not enough data",
         }
     }
 
-    pub fn not_enough_data(count: u16) -> Self {
+    pub fn device_not_initialized() -> Self {
         Mpu60x0Error {
-            kind: ErrorKind::NotEnoughData(count),
-            message: "Not enough data",
+            kind: ErrorKind::DeviceNotInitialized,
+            message: "Device not initialized",
         }
     }
 }

@@ -1,13 +1,9 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+runner = "probe-run --chip STM32F429ZI"
+
 [target.thumbv7em-none-eabihf]
-runner = "probe-rs run --chip STM32F429ZI"
 rustflags = [
-    "-C", "linker=arm-none-eabi-gcc",
-    "-C", "link-arg=-Wl,--gc-sections",
-    "-C", "link-arg=-Tmemory.x",
-    "-C", "link-arg=-mcpu=cortex-m4",
-    "-C", "link-arg=-mthumb",
-    "-C", "link-arg=-mfloat-abi=hard",
-    "-C", "link-arg=-mfpu=fpv4-sp-d16"
+    "-C", "link-arg=-Tlink.x",
 ]
 
 [build]

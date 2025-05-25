@@ -3,105 +3,71 @@
 
 extern crate alloc;
 
-use bindings::gapcom_create;
-use cortex_m_rt::entry;
 use panic_halt as _;
-use stm32f4xx_hal::{
-    delay::{ self, Delay },
-    i2c::{ I2c, Instance, Mode },
-    pac::{ self, sai::ch::im, GPIOG },
-    prelude::*,
-    serial::{ Serial, config::Config },
-};
-use core::panic::PanicInfo;
-use rtt_target::{ rtt_init_print, rprintln };
-use core::fmt::Write;
 use tinyrlibc as _;
 use embedded_alloc::LlffHeap as Heap;
-use mpu60x0::{ Mpu60x0, error::Mpu60x0Error };
+
+use rtt_target::{ rtt_init_print };
+use core::mem::MaybeUninit;
+use cortex_m_rt::entry;
+
+use mpu60x0::{ Mpu60x0, error::* };
+use gapcom_callback::init_gapcom_callback;
+use utils::{ init_peripherals, gyro_process };
+use bindings::{ gapcom_create, gapcom_set_sender_impl };
+use logger::{ init_logger, logger_instance };
+use gapcom_sender::SENDER_IMPL;
 
 mod mpu60x0;
 mod bindings;
+mod gapcom_callback;
+mod utils;
+mod interrupts;
+mod gapcom_sender;
+mod logger;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
 
+fn init_heap() {
+    const HEAP_SIZE: usize = 32768;
+    static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
+    unsafe {
+        HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE);
+    }
+}
+
 #[entry]
 fn main() -> ! {
-    {
-        use core::mem::MaybeUninit;
-        const HEAP_SIZE: usize = 1024;
-        static mut HEAP_MEM: [MaybeUninit<u8>; HEAP_SIZE] = [MaybeUninit::uninit(); HEAP_SIZE];
-        unsafe {
-            HEAP.init(&raw mut HEAP_MEM as usize, HEAP_SIZE);
-        }
-    }
-
+    init_heap();
     rtt_init_print!();
 
-    let device = pac::Peripherals::take().unwrap();
-    let core = cortex_m::Peripherals::take().unwrap();
+    let mut peri = init_peripherals();
 
-    let rcc = device.RCC.constrain();
-    let clocks = rcc.cfgr.sysclk((84).mhz()).freeze();
-    let _ = device.SYSCFG.constrain();
+    gapcom_sender::set_uart7_tx(&mut peri.uart7_tx as *mut _);
 
-    let gpiog = device.GPIOG.split();
-    let gpiob = device.GPIOB.split();
-    let gpiof = device.GPIOF.split();
+    init_logger(peri.usart1_tx);
 
-    let mut led = gpiog.pg13.into_push_pull_output();
-    let mut delay = Delay::new(core.SYST, &clocks);
-
-    rprintln!("Hello, world!");
+    logger_instance().info("System booted");
 
     unsafe {
         let gapcom = gapcom_create();
+        gapcom_set_sender_impl(gapcom, &raw mut SENDER_IMPL as *mut _);
+
+        init_gapcom_callback(gapcom);
+
+        interrupts::set_gapcom(gapcom);
+
+        cortex_m::peripheral::NVIC::unmask(stm32f4xx_hal::pac::Interrupt::UART7);
     }
 
-    let i2c = I2c::new(
-        device.I2C1,
-        (gpiob.pb6, gpiob.pb7),
-        Mode::Fast {
-            frequency: (400_000).hz(),
-            duty_cycle: stm32f4xx_hal::i2c::DutyCycle::Ratio2to1,
-        },
-        clocks
-    );
-
-    let mut mpu = Mpu60x0::new(i2c, delay);
-
-    match mpu.init() {
-        Ok(_) => rprintln!("MPU60X0 initialized"),
-        Err(e) => rprintln!("MPU60X0 initialization failed: {:?}", e),
-    }
-
-    let serial = Serial::uart7(
-        device.UART7,
-        (gpiof.pf7.into_alternate(), gpiof.pf6.into_alternate()),
-        Config::default().baudrate((9600).bps()).wordlength_9().parity_even(),
-        clocks
-    ).unwrap();
-    let (mut tx, _rx) = serial.split();
+    let gyro = Mpu60x0::new(peri.i2c);
+    cortex_m::interrupt::free(|cs| {
+        mpu60x0::MPU.borrow(cs).replace(Some(gyro));
+    });
 
     loop {
-        match mpu.read_fifo() {
-            Ok(data) => {
-                rprintln!(
-                    "Gyro: x: {}, y: {}, z: {}",
-                    data.gyro_data.x,
-                    data.gyro_data.y,
-                    data.gyro_data.z
-                );
-                let _ = write!(
-                    tx,
-                    "X{:08}, Y{:08}, Z{:08}\r\n",
-                    data.gyro_data.x,
-                    data.gyro_data.y,
-                    data.gyro_data.z
-                );
-            }
-            Err(e) => (),
-        }
+        gyro_process();
+        logger_instance().debug("Looping...");
     }
 }

@@ -13,11 +13,3 @@ pub const FIFO_DATA: u8 = 0x74;
 pub const USER_CTRL: u8 = 0x6a;
 pub const CONFIG: u8 = 0x1a;
 pub const GYRO_CONFIG: u8 = 0x1b;
-pub const ACCEL_CONFIG: u8 = 0x1c;
-
-pub const GYRO_XOUT_H: u8 = 0x43;
-pub const GYRO_XOUT_L: u8 = 0x44;
-pub const GYRO_YOUT_H: u8 = 0x45;
-pub const GYRO_YOUT_L: u8 = 0x46;
-pub const GYRO_ZOUT_H: u8 = 0x47;
-pub const GYRO_ZOUT_L: u8 = 0x48;
