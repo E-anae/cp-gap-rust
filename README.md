@@ -140,3 +140,10 @@ Messages will be logged using this pattern: "[LEVEL] MESSAGE"
 The module for the support of the gyroscope can be found at `src/mpu60x0` it contains the data structure for the output data of the gyroscope, the needed registers for instanciation and data aquirement, and custom errors as well as all the needed functions to properly use the gyroscope.
 
 To enable it use the gapcli `set-gyroscope on` command. You will then see appear logs with the data collected from the gyroscope.
+
+## Credits
+
+written by:
+
+anton.vella
+titouan.guesdon
