@@ -79,7 +79,7 @@ Now using the 4 pin wires connect the VCC pin of the [MPU60X0](https://www.gotro
 ## How to use ?
 
 > [!NOTE]
-> No need for a Makefile here cargo is all you need!
+> No need for a Makefile here, cargo is all you need!
 
 To build the project simply run `cargo build --release`.
 You can then find the binary at `target/thumbv7em-none-eabihf/release/cp-gap-rust`.
@@ -137,4 +137,6 @@ Messages will be logged using this pattern: "[LEVEL] MESSAGE"
 
 ### Step 3 (Gyroscope)
 
-The module for the support of the gyroscope can be found at `src/mpu60x0`
+The module for the support of the gyroscope can be found at `src/mpu60x0` it contains the data structure for the output data of the gyroscope, the needed registers for instanciation and data aquirement, and custom errors as well as all the needed functions to properly use the gyroscope.
+
+To enable it use the gapcli `set-gyroscope on` command. You will then see appear logs with the data collected from the gyroscope.

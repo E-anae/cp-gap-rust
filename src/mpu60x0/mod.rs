@@ -80,7 +80,7 @@ impl<I2C: Write + WriteRead> Mpu60x0<I2C> {
         self.write_at_address(PWR_MGMT_1, 0x01)?;
         self.delay_ms(10);
 
-        // 3. Enable all sensors (disable standby)
+        // 3. Disable standby
         self.write_at_address(PWR_MGMT_2, 0x00)?;
         self.delay_ms(10);
 
