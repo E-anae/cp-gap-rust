@@ -59,6 +59,8 @@ install target for project
 
 `rustup target add thumbv7em-none-eabihf`
 
+install gcc-arm-none-eabi on [this website](https://developer.arm.com/downloads/-/gnu-rm) and run the installer. Don't forget to check the Add path to environment variable option before you click the Finish button for the installation.
+
 install probe-rs
 
 `irm https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.ps1 | iex`
