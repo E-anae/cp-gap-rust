@@ -22,6 +22,10 @@ install target for project
 
 `rustup target add thumbv7em-none-eabihf`
 
+install gcc-arm-none-eabi
+
+`sudo apt install gcc-arm-none-eabi`
+
 install probe-rs
 
 `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh`
