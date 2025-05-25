@@ -67,7 +67,7 @@ It should now appear on the list of device connected to your computer.
 > [!NOTE]
 > If you are using WSL take a look at [this](https://learn.microsoft.com/windows/wsl/connect-usb). You are going to need to forward your COM ports to your WSL.
 > Once installed, restart your computer, open a Windows' powershell terminal in administrator mode.
-> Find the right busid using `usbipd list`, it should look like "ST-Link Debug, Dispositif de stockage de masse USB, STMic..."
+> Find the right busid using `usbipd list`, it should look like "<busid> ... ST-Link Debug, Dispositif de stockage de masse USB, STMic..."
 > You will now have to bind and attach your device to your WSL, using first, `usbipd bind --busid <busid>`, and then `usbipd attach --wsl --busid <busid>`
 
 you can run `cargo flash --release --chip STM32F429ZI`.
