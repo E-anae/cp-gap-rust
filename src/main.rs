@@ -48,7 +48,7 @@ fn main() -> ! {
 
     init_logger(peri.usart1_tx);
 
-    logger_instance().info("System booted");
+    logger_instance().info("GAP system booted");
 
     unsafe {
         let gapcom = gapcom_create();

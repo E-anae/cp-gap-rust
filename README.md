@@ -1,6 +1,6 @@
 # cp-gap-rust
 
-Bonus step for GAP project
+Bonus for GAP project, step 0-3 in Rust
 
 ## Requirements
 
@@ -49,9 +49,7 @@ If you’re still unable to access the debug probes after following these steps,
 
 install cargo and rustup
 
-[Download rustup-init.exe (32-bit)](https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe)
-
-[Download rustup-init.exe (64-bit)](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
+[Download rustup-init.exe (32-bit)](https://static.rust-lang.org/rustup/dist/i686-pc-windows-msvc/rustup-init.exe) or [Download rustup-init.exe (64-bit)](https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe)
 
 install target for project
 
@@ -84,13 +82,13 @@ Now using the 4 pin wires connect the VCC pin of the [MPU60X0](https://www.gotro
 To build the project simply run `cargo build --release`.
 You can then find the binary at `target/thumbv7em-none-eabihf/release/cp-gap-rust`.
 
-If you want to flash the code, onto the chip connect the chipt to your computer with the given micro-usb cable.
-
 you can run `cargo flash --release --chip STM32F429ZI`.
 
 You can also run `cargo embed --release` which will flash and open a debug rtt terminal.
 
 Run `cargo clean` to clean the project from generated files.
+
+Good Job! You now have flashed the program on your STM32F429ZI! And can now send requests with your own gapcli!
 
 ## Implementation
 
@@ -118,7 +116,7 @@ For embedded projects made to run on external devices we also needed to provide 
 
 ### Step 1 (Libgapcom)
 
-Linkage to libgapcom.a in build.rs, build.rs is executed only at compilation does not change execution.
+Linkage to libgapcom.a in build.rs. The build.rs file is executed only at compilation does not change execution.
 To use symbols present in the lib we need to create an interface in rust that allows us to call C functions from the lib. This part is implemented in `src/binding.rs` and was in part generated using Bindgen, a crate that automatically generates this kind of interface given the header files.
 
 The idea is that we just need to declare equivalent functions in Rust with equivalent types without the body and calling them will call the lib function as they have the same symbol. Of course they must all be unsafe as C functions are unsafe.
