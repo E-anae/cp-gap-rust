@@ -6,6 +6,7 @@ use stm32f4xx_hal::{
     prelude::*,
     serial::{ config::Config, Serial, Tx, Event },
 };
+use cty;
 
 use crate::{ mpu60x0, logger_instance, Mpu60x0Error, ErrorKind };
 
@@ -83,4 +84,14 @@ pub fn gyro_process() {
             Err(_) => {}
         }
     }
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn puts(string: *mut cty::c_char) -> cty::c_int {
+    return 0;
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn printf(format: *const cty::c_char, ...) -> cty::c_int {
+    return 0;
 }

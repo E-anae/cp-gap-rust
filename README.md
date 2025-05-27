@@ -20,7 +20,11 @@ install cargo and rustup
 
 install target for project
 
-`rustup target add thumbv7em-none-eabihf`
+```
+rustup install nightly
+rustup default nightly
+rustup target add thumbv7em-none-eabihf
+```
 
 install probe-rs
 

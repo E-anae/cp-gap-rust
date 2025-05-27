@@ -1,5 +1,6 @@
 #![no_main]
 #![no_std]
+#![feature(c_variadic)]
 
 extern crate alloc;
 
@@ -17,6 +18,8 @@ use utils::{ init_peripherals, gyro_process };
 use bindings::{ gapcom_create, gapcom_set_sender_impl };
 use logger::{ init_logger, logger_instance };
 use gapcom_sender::SENDER_IMPL;
+
+pub use utils::{ puts, printf };
 
 mod mpu60x0;
 mod bindings;
