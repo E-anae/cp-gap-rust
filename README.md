@@ -26,6 +26,10 @@ rustup default nightly
 rustup target add thumbv7em-none-eabihf
 ```
 
+install gcc-arm-none-eabi
+
+`sudo apt install gcc-arm-none-eabi`
+
 install probe-rs
 
 `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/probe-rs/probe-rs/releases/latest/download/probe-rs-tools-installer.sh | sh`
@@ -58,6 +62,8 @@ install cargo and rustup
 install target for project
 
 `rustup target add thumbv7em-none-eabihf`
+
+install gcc-arm-none-eabi on [this website](https://developer.arm.com/downloads/-/gnu-rm) and run the installer. Don't forget to check the Add path to environment variable option before you click the Finish button for the installation.
 
 install probe-rs
 
