@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  firmware:
+    name: Build firmware
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: thumbv7em-none-eabihf
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Install gcc-arm-none-eabi
+        run: sudo apt-get update && sudo apt-get install -y gcc-arm-none-eabi
+      - name: Build (release)
+        run: cargo build --release
+      - name: Clippy
+        run: cargo clippy --release -- -D warnings
+        continue-on-error: true
+
+  test:
+    name: Test driver
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+      - name: Test mpu60x0 crate (host)
+        run: cargo test -p mpu60x0
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+        continue-on-error: true
