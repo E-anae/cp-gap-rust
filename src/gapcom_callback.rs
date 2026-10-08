@@ -1,4 +1,4 @@
-use crate::{ bindings::*, logger::{ self, logger_instance, LogLevel }, mpu60x0 };
+use crate::{ bindings::*, logger::{ self, logger_instance, LogLevel }, gyro };
 
 unsafe extern "C" fn ping_callback(handle: *mut gapcom_handle_t, _proto_msg: *const cty::c_void) {
     unsafe {
@@ -43,7 +43,7 @@ unsafe extern "C" fn set_gyroscope_callback(
 
         cortex_m::interrupt::free(|cs| {
             let mut gyro = loop {
-                match mpu60x0::MPU.borrow(cs).try_borrow_mut() {
+                match gyro::MPU.borrow(cs).try_borrow_mut() {
                     Ok(gyro) => {
                         break gyro;
                     }

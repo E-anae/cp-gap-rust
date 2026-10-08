@@ -1,8 +1,7 @@
+#![cfg_attr(not(test), no_std)]
+
 use core::{ result::Result::{ self, Ok } };
 use embedded_hal::blocking::i2c::{ Write, WriteRead };
-use core::cell::RefCell;
-use cortex_m::interrupt::Mutex;
-use stm32f4xx_hal::{ i2c::I2c, pac::I2C1, gpio::{ Pin, Input, Floating } };
 
 use error::Mpu60x0Error;
 use data::{ FifoData, GyroData };
@@ -26,11 +25,8 @@ mod registers;
 mod data;
 pub mod error;
 
-pub static MPU: Mutex<
-    RefCell<
-        Option<Mpu60x0<I2c<I2C1, (Pin<Input<Floating>, 'B', 6>, Pin<Input<Floating>, 'B', 7>)>>>
-    >
-> = Mutex::new(RefCell::new(None));
+#[cfg(test)]
+mod tests;
 
 pub struct Mpu60x0<I2C> {
     i2c: I2C,
@@ -54,9 +50,14 @@ impl<I2C: Write + WriteRead> Mpu60x0<I2C> {
         Ok(buffer[0])
     }
 
+    #[cfg(not(test))]
     pub fn delay_ms(&mut self, ms: u32) {
         cortex_m::asm::delay(840 * ms);
     }
+
+    // cortex_m::asm::delay is ARM-only; tests run on the host.
+    #[cfg(test)]
+    pub fn delay_ms(&mut self, _ms: u32) {}
 
     pub fn ping(&mut self) -> Result<(), Mpu60x0Error> {
         if self.read_address(WHO_AM_I)? != MPU60X0_ADDRESS {

@@ -8,7 +8,7 @@ use stm32f4xx_hal::{
 };
 use cty;
 
-use crate::{ mpu60x0, logger_instance, Mpu60x0Error, ErrorKind };
+use crate::{ gyro, logger_instance, Mpu60x0Error, ErrorKind };
 
 pub struct Peripherals {
     pub i2c: I2c<I2C1, (Pin<Input<Floating>, 'B', 6>, Pin<Input<Floating>, 'B', 7>)>,
@@ -64,7 +64,7 @@ pub fn init_peripherals() -> Peripherals {
 
 pub fn gyro_process() {
     let gyro_result = cortex_m::interrupt::free(|cs| {
-        if let Ok(mut gyro) = mpu60x0::MPU.borrow(cs).try_borrow_mut() {
+        if let Ok(mut gyro) = gyro::MPU.borrow(cs).try_borrow_mut() {
             gyro.as_mut().map(|g| g.read_gyro())
         } else {
             None

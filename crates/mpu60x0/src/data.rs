@@ -1,7 +1,9 @@
+#[derive(Debug)]
 pub struct FifoData {
     pub gyro_data: GyroData,
 }
 
+#[derive(Debug)]
 pub struct GyroData {
     pub x: i16,
     pub y: i16,

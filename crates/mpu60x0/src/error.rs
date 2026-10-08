@@ -1,6 +1,6 @@
 use core::{ error::Error, fmt::{ Display, Debug } };
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ErrorKind {
     CustomError,
     I2cError,

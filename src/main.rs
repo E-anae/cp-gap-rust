@@ -21,8 +21,8 @@ use gapcom_sender::SENDER_IMPL;
 
 pub use utils::{ puts, printf };
 
-mod mpu60x0;
 mod bindings;
+mod gyro;
 mod gapcom_callback;
 mod utils;
 mod interrupts;
@@ -66,7 +66,7 @@ fn main() -> ! {
 
     let gyro = Mpu60x0::new(peri.i2c);
     cortex_m::interrupt::free(|cs| {
-        mpu60x0::MPU.borrow(cs).replace(Some(gyro));
+        gyro::MPU.borrow(cs).replace(Some(gyro));
     });
 
     loop {
