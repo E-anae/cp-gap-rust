@@ -13,8 +13,16 @@ pub fn set_gapcom(gapcom: *mut gapcom_handle_t) {
 fn UART7() {
     let uart = unsafe { &*UART7::ptr() };
 
-    if uart.sr.read().rxne().bit_is_set() {
+    let sr = uart.sr.read();
+
+    if sr.rxne().bit_is_set() || sr.ore().bit_is_set() {
+        // Reading DR (after SR) also clears ORE, so it is always read.
         let received = uart.dr.read().bits() as u8;
+
+        // Drop bytes received with an overrun, parity, framing or noise error.
+        if sr.ore().bit_is_set() || sr.pe().bit_is_set() || sr.fe().bit_is_set() || sr.nf().bit_is_set() {
+            return;
+        }
 
         let gapcom = GAPCOM.load(Ordering::SeqCst);
         if !gapcom.is_null() {

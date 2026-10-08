@@ -13,3 +13,6 @@ target/
 
 # Added by cargo
 /target
+
+# Claude Code local settings
+.claude/settings.local.json

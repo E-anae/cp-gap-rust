@@ -72,6 +72,12 @@ pub struct GAPSetGyroscopeReq {
     pub set: bool,
 }
 
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct GAPPowerSaveModeReq {
+    pub save_power: bool,
+}
+
 unsafe extern "C" {
     #[doc = " @brief Create a libgapcom session handle.\n\n A libgapcom session handle is an opaque object carrying session-specific metadata.\n It is required for calling every function of the libgapcom API.\n\n @return gapcom_handle_t* A new session handle"]
     pub fn gapcom_create() -> *mut gapcom_handle_t;
@@ -122,6 +128,13 @@ unsafe extern "C" {
 
 unsafe extern "C" {
     pub fn gapcom_respond_set_gyroscope(
+        handle: *mut gapcom_handle_t,
+        error_code: GAPErrorCode
+    ) -> cty::c_int;
+}
+
+unsafe extern "C" {
+    pub fn gapcom_respond_power_save_mode(
         handle: *mut gapcom_handle_t,
         error_code: GAPErrorCode
     ) -> cty::c_int;
