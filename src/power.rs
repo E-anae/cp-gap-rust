@@ -9,6 +9,14 @@ const TICK_HZ: u32 = 20;
 // Power save is on by default.
 static POWER_SAVE: AtomicBool = AtomicBool::new(true);
 
+// Set by the SysTick handler, consumed by the main loop.
+static TICK: AtomicBool = AtomicBool::new(false);
+
+/// Returns true once per SysTick, clearing the flag.
+pub fn take_tick() -> bool {
+    TICK.swap(false, Ordering::SeqCst)
+}
+
 pub fn set_requested(enabled: bool) {
     POWER_SAVE.store(enabled, Ordering::SeqCst);
 }
@@ -41,6 +49,8 @@ pub fn sleep() {
     });
 }
 
-// Only wakes the core from `wfi`.
+// Wakes the core from `wfi` and flags that a gyro sample is due.
 #[exception]
-fn SysTick() {}
+fn SysTick() {
+    TICK.store(true, Ordering::SeqCst);
+}

@@ -69,6 +69,7 @@ fn main() -> ! {
     cortex_m::interrupt::free(|cs| {
         gyro::MPU.borrow(cs).replace(Some(gyro));
     });
+    gyro::set_installed();
 
     let mut syst = cortex_m::Peripherals::take().unwrap().SYST;
     let mut applied = false;
@@ -83,7 +84,9 @@ fn main() -> ! {
 
         if want {
             power::sleep();
-            gyro_process();
+            if power::take_tick() {
+                gyro_process();
+            }
         } else {
             gyro_process();
             logger_instance().debug("Looping...");

@@ -63,11 +63,36 @@ pub fn init_peripherals() -> Peripherals {
 }
 
 pub fn gyro_process() {
-    let gyro_result = cortex_m::interrupt::free(|cs| {
-        if let Ok(mut gyro) = gyro::MPU.borrow(cs).try_borrow_mut() {
-            gyro.as_mut().map(|g| g.read_gyro())
-        } else {
-            None
+    // Take the gyro out of the mutex so the I2C traffic runs with interrupts enabled.
+    let taken = cortex_m::interrupt::free(|cs| {
+        gyro::MPU.borrow(cs).try_borrow_mut().ok().and_then(|mut g| g.take())
+    });
+
+    let Some(mut mpu) = taken else {
+        return;
+    };
+
+    match gyro::take_request() {
+        gyro::REQ_ENABLE => {
+            match mpu.enable() {
+                Ok(_) => logger_instance().info("Gyroscope enabled"),
+                Err(_) => logger_instance().error("Failed to enable gyroscope"),
+            }
+        }
+        gyro::REQ_DISABLE => {
+            match mpu.disable() {
+                Ok(_) => logger_instance().info("Gyroscope disabled"),
+                Err(_) => logger_instance().error("Failed to disable gyroscope (already disabled?)"),
+            }
+        }
+        _ => {}
+    }
+
+    let gyro_result = Some(mpu.read_gyro());
+
+    cortex_m::interrupt::free(|cs| {
+        if let Ok(mut g) = gyro::MPU.borrow(cs).try_borrow_mut() {
+            *g = Some(mpu);
         }
     });
 
@@ -87,11 +112,11 @@ pub fn gyro_process() {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn puts(string: *mut cty::c_char) -> cty::c_int {
+pub extern "C" fn puts(_string: *mut cty::c_char) -> cty::c_int {
     return 0;
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn printf(format: *const cty::c_char, ...) -> cty::c_int {
+pub unsafe extern "C" fn printf(_format: *const cty::c_char, ...) -> cty::c_int {
     return 0;
 }

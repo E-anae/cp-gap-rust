@@ -12,5 +12,7 @@ target/
 .vscode
 
 # Added by cargo
-Cargo.lock
 /target
+
+# Claude Code local settings
+.claude/settings.local.json
