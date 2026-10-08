@@ -28,6 +28,7 @@ mod utils;
 mod interrupts;
 mod gapcom_sender;
 mod logger;
+mod power;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -69,8 +70,23 @@ fn main() -> ! {
         gyro::MPU.borrow(cs).replace(Some(gyro));
     });
 
+    let mut syst = cortex_m::Peripherals::take().unwrap().SYST;
+    let mut applied = false;
+
     loop {
-        gyro_process();
-        logger_instance().debug("Looping...");
+        let want = power::requested();
+        if want != applied {
+            power::apply(&mut syst, want);
+            logger_instance().info(if want { "Power save enabled" } else { "Power save disabled" });
+            applied = want;
+        }
+
+        if want {
+            power::sleep();
+            gyro_process();
+        } else {
+            gyro_process();
+            logger_instance().debug("Looping...");
+        }
     }
 }

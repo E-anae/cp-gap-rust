@@ -133,7 +133,7 @@ The idea is that we just need to declare equivalent functions in Rust with equiv
 
 The chosen method to read and send message from capcom is UART (UART7 in this case). The rx interupt implementation can be found at `src/interrupts.rs`, where we call capcom accept to process the sent command. And the sender impl can be found in `src/gapcom_sender.rs`, it uses UART7's tx to send the response.
 
-Once a command has been fully accepted, the associated callback will be called, the can be found in `gapcom_callbacks.rs`. Supported commands are: ping, set-log-verbosity, set-gyroscope.
+Once a command has been fully accepted, the associated callback will be called, the can be found in `gapcom_callbacks.rs`. Supported commands are: ping, set-log-verbosity, set-gyroscope, power-save.
 
 ### Step 2 (Logger)
 
@@ -145,7 +145,7 @@ Messages will be logged using this pattern: "[LEVEL] MESSAGE"
 
 ### Step 3 (Gyroscope)
 
-The module for the support of the gyroscope can be found at `src/mpu60x0` it contains the data structure for the output data of the gyroscope, the needed registers for instanciation and data aquirement, and custom errors as well as all the needed functions to properly use the gyroscope.
+The module for the support of the gyroscope can be found at `crates/mpu60x0` it contains the data structure for the output data of the gyroscope, the needed registers for instanciation and data aquirement, and custom errors as well as all the needed functions to properly use the gyroscope.
 
 To enable it use the gapcli `set-gyroscope on` command. You will then see appear logs with the data collected from the gyroscope.
 
@@ -155,3 +155,7 @@ written by:
 
 anton.vella
 titouan.guesdon
+
+### Power save mode
+
+Power save is enabled by default. While it is on, the main loop sleeps (`wfi`) instead of busy-polling and is woken by the UART7 interrupt and by a 50 ms SysTick (the gyroscope's 20 Hz sample rate), so the gyroscope keeps logging. The `power-save` command turns it off (busy loop, "Looping..." debug log) or back on. Note that sleeping with `wfi` may interrupt the debug probe connection.

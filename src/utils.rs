@@ -19,7 +19,7 @@ pub struct Peripherals {
 pub fn init_peripherals() -> Peripherals {
     let device = pac::Peripherals::take().unwrap();
     let rcc = device.RCC.constrain();
-    let clocks = rcc.cfgr.sysclk((84).mhz()).freeze();
+    let clocks = rcc.cfgr.sysclk(crate::power::SYSCLK_HZ.hz()).freeze();
 
     let gpioa = device.GPIOA.split();
     let gpiob = device.GPIOB.split();
